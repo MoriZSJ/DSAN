@@ -114,7 +114,7 @@ if __name__ == '__main__':
         t_correct = test(model)
         if t_correct > correct:
             correct = t_correct
-            #torch.save(model, 'model.pkl')
+            torch.save(model, 'model.pkl')
         end_time = time.time()
         print('source: {} to target: {} max correct: {} max accuracy{: .2f}%\n'.format(
               source_name, target_name, correct, 100. * correct / len_target_dataset))

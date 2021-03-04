@@ -3,3 +3,7 @@
 
 ### python cache
 *.pyc
+
+
+### model file
+*.pkl
