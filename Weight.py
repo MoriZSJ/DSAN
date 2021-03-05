@@ -1,13 +1,16 @@
 import numpy as np
 import torch
 from Config import class_num
-def convert_to_onehot(sca_label, class_num=31):
+
+
+def convert_to_onehot(sca_label, class_num=2):
     return np.eye(class_num)[sca_label]
+
 
 class Weight:
 
     @staticmethod
-    def cal_weight(s_label, t_label, type='visual', batch_size=32, class_num=31):
+    def cal_weight(s_label, t_label, type='visual', batch_size=32, class_num=2):
         batch_size = s_label.size()[0]
         s_sca_label = s_label.cpu().data.numpy()
         s_vec_label = convert_to_onehot(s_sca_label)
@@ -35,11 +38,11 @@ class Weight:
                 s_tvec = s_vec_label[:, i].reshape(batch_size, -1)
                 t_tvec = t_vec_label[:, i].reshape(batch_size, -1)
                 ss = np.dot(s_tvec, s_tvec.T)
-                weight_ss = weight_ss + ss# / np.sum(s_tvec) / np.sum(s_tvec)
+                weight_ss = weight_ss + ss  # / np.sum(s_tvec) / np.sum(s_tvec)
                 tt = np.dot(t_tvec, t_tvec.T)
-                weight_tt = weight_tt + tt# / np.sum(t_tvec) / np.sum(t_tvec)
+                weight_tt = weight_tt + tt  # / np.sum(t_tvec) / np.sum(t_tvec)
                 st = np.dot(s_tvec, t_tvec.T)
-                weight_st = weight_st + st# / np.sum(s_tvec) / np.sum(t_tvec)
+                weight_st = weight_st + st  # / np.sum(s_tvec) / np.sum(t_tvec)
                 count += 1
 
         length = count  # len( set_s ) * len( set_t )

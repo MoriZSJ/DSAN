@@ -105,7 +105,7 @@ def test(model):
 if __name__ == '__main__':
     model = models.DSAN(num_classes=class_num)
     correct = 0
-    print(model)
+    # print(model)
     if cuda:
         model.cuda()
     time_start = time.time()
