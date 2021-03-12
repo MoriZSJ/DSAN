@@ -5,6 +5,7 @@ import mmd
 import torch
 import numpy as np
 from Config import bottle_neck
+from torchsummary import summary
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -112,7 +113,8 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AvgPool2d(7, stride=1)
-        self.baselayer = [self.conv1, self.bn1, self.layer1, self.layer2, self.layer3, self.layer4]
+        self.baselayer = [self.conv1, self.bn1, self.layer1,
+                          self.layer2, self.layer3, self.layer4]
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
@@ -155,11 +157,12 @@ class ResNet(nn.Module):
 
         return x
 
+
 class DSAN(nn.Module):
 
     def __init__(self, num_classes=31):
         super(DSAN, self).__init__()
-        self.feature_layers = resnet50(True)
+        self.feature_layers = resnet50(True)  # True for pretrained model
 
         if bottle_neck:
             self.bottle = nn.Linear(2048, 256)
@@ -167,21 +170,22 @@ class DSAN(nn.Module):
         else:
             self.cls_fc = nn.Linear(2048, num_classes)
 
-
     def forward(self, source, target, s_label):
-        source = self.feature_layers(source)
+        source = self.feature_layers(source)        # dimension=2048
         if bottle_neck:
             source = self.bottle(source)
         s_pred = self.cls_fc(source)
-        if self.training ==True:
+        if self.training == True:
             target = self.feature_layers(target)
             if bottle_neck:
                 target = self.bottle(target)
             t_label = self.cls_fc(target)
-            loss = mmd.lmmd(source, target, s_label, torch.nn.functional.softmax(t_label, dim=1))
+            loss = mmd.lmmd(source, target, s_label,
+                            torch.nn.functional.softmax(t_label, dim=1))
         else:
             loss = 0
         return s_pred, loss
+
 
 def resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
@@ -193,3 +197,10 @@ def resnet50(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
+
+
+if __name__ == '__main__':
+    import torch
+    model = resnet50()
+    model = model.cuda()
+    summary(model, (3, 224, 224))

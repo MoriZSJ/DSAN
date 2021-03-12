@@ -59,9 +59,9 @@ def train(epoch, model):
         if cuda:
             data_source, label_source = data_source.cuda(), label_source.cuda()
             data_target = data_target.cuda()
-        data_source, label_source = Variable(
-            data_source), Variable(label_source)
-        data_target = Variable(data_target)
+        # data_source, label_source = Variable(
+        #     data_source), Variable(label_source)
+        # data_target = Variable(data_target)
 
         optimizer.zero_grad()
         label_source_pred, loss_mmd = model(
@@ -86,7 +86,7 @@ def test(model):
         for data, target in target_test_loader:
             if cuda:
                 data, target = data.cuda(), target.cuda()
-            data, target = Variable(data), Variable(target)
+            # data, target = Variable(data), Variable(target)
             s_output, t_output = model(data, data, target)
             # sum up batch loss
             test_loss += F.nll_loss(F.log_softmax(s_output,

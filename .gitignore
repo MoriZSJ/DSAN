@@ -2,11 +2,11 @@
 /dataset
 
 ### python cache
-*.pyc
-
+/__pycache__
+/.vscode
 
 ### model file
-*.pkl
+/save_models
 
 ####
 # test update username
