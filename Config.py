@@ -1,15 +1,19 @@
-batch_size = 32
-epochs = 800        #
-lr = 0.01       #
-momentum = 0.9
 no_cuda = False
 cuda_id = '0'
 seed = 1
 log_interval = 10
-l2_decay = 5e-4
-class_num = 2
-param = 1       #
 bottle_neck = True
-root_path = "dataset/COVID19/"
-source_name = "SARSCov"         #
-target_name = "COVIDCT"         #
+
+batch_size = 32
+epochs = 200        #
+lr = 0.01       #
+momentum = 0.9
+l2_decay = 5e-4
+param = 1       #
+
+
+class_num = 31      #
+tensorboard_path = 'tensorboard_log/office31/'
+root_path = "dataset/OFFICE31/"
+source_name = "amazon"         #
+target_name = "dslr"         #

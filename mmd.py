@@ -3,6 +3,7 @@
 import torch
 from Weight import Weight
 
+
 def guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     n_samples = int(source.size()[0])+int(target.size()[0])
     total = torch.cat([source, target], dim=0)
@@ -16,7 +17,8 @@ def guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None
     bandwidth /= kernel_mul ** (kernel_num // 2)
     bandwidth_list = [bandwidth * (kernel_mul**i) for i in range(kernel_num)]
     kernel_val = [torch.exp(-L2_distance / bandwidth_temp) for bandwidth_temp in bandwidth_list]
-    return sum(kernel_val)#/len(kernel_val)
+    return sum(kernel_val)  # /len(kernel_val)
+
 
 def lmmd(source, target, s_label, t_label, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     batch_size = source.size()[0]
@@ -34,5 +36,5 @@ def lmmd(source, target, s_label, t_label, kernel_mul=2.0, kernel_num=5, fix_sig
     TT = kernels[batch_size:, batch_size:]
     ST = kernels[:batch_size, batch_size:]
 
-    loss += torch.sum( weight_ss * SS + weight_tt * TT - 2 * weight_st * ST )
+    loss += torch.sum(weight_ss * SS + weight_tt * TT - 2 * weight_st * ST)
     return loss
