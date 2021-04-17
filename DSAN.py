@@ -11,9 +11,9 @@ from torch.utils.tensorboard import SummaryWriter
 
 os.environ["CUDA_VISIBLE_DEVICES"] = cuda_id
 cuda = not no_cuda and torch.cuda.is_available()
-torch.manual_seed(seed)
-if cuda:
-    torch.cuda.manual_seed(seed)
+# torch.manual_seed(seed)
+# if cuda:
+#     torch.cuda.manual_seed(seed)
 
 kwargs = {'num_workers': 1, 'pin_memory': True} if cuda else {}
 
@@ -121,6 +121,6 @@ if __name__ == '__main__':
         print('source: {} to target: {} max correct: {} max accuracy{: .2f}%\n'.format(
               source_name, target_name, correct, 100. * correct / len_target_dataset))
         print('cost time:', end_time - time_start)
-
+    # torch.save(model, 'model_last.pkl')
     logger.flush()
     logger.close()

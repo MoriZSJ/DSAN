@@ -74,20 +74,24 @@ class Bottleneck(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
         self.stride = stride
+        # self.dropout = nn.Dropout(0.3)
 
     def forward(self, x):
         residual = x
 
         out = self.conv1(x)
         out = self.bn1(out)
+        # out = self.dropout(out)
         out = self.relu(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
+        # out = self.dropout(out)
         out = self.relu(out)
 
         out = self.conv3(out)
         out = self.bn3(out)
+        # out = self.dropout(out)
 
         if self.downsample is not None:
             residual = self.downsample(x)
@@ -162,6 +166,7 @@ class DSAN(nn.Module):
 
     def __init__(self, num_classes=31):
         super(DSAN, self).__init__()
+        # self.feature_layers = resnet101(True)   # for VisDA2017
         self.feature_layers = resnet50(True)  # True for pretrained model
 
         if bottle_neck:
@@ -174,7 +179,7 @@ class DSAN(nn.Module):
         source = self.feature_layers(source)        # dimension=2048
         if bottle_neck:
             source = self.bottle(source)
-        s_pred = self.cls_fc(source)
+        s_pred = self.cls_fc(source)        # soft label
         if self.training == True:
             target = self.feature_layers(target)
             if bottle_neck:
@@ -184,23 +189,29 @@ class DSAN(nn.Module):
                             torch.nn.functional.softmax(t_label, dim=1))
         else:
             loss = 0
+        # print(source, source.shape)  # [32,256]
+        # print(s_pred, s_pred.shape)    # [32,65]
+        # print(torch.nn.functional.softmax(t_label, dim=1), torch.nn.functional.softmax(t_label, dim=1).shape) # soft
+        # print(s_label)      # [32,1]
         return s_pred, loss
 
 
 def resnet50(pretrained=False, **kwargs):
-    """Constructs a ResNet-50 model.
-
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']), strict=False)
+    return model
+
+
+def resnet101(pretrained=False, **kwargs):
+    model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet101']))
     return model
 
 
 if __name__ == '__main__':
     import torch
-    model = resnet50()
-    model = model.cuda()
-    summary(model, (3, 224, 224))
+    model = DSAN().cuda()
+
+    # summary(model, (3, 224, 224))

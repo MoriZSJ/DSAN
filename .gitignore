@@ -5,8 +5,10 @@
 /__pycache__
 /.vscode
 
-### model file
+### saved logs and models
 /save_models
+/tensorboard_log
+*.pkl
 
 ####
 # test update username
