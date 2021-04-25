@@ -9,8 +9,7 @@ from Config import *
 import time
 from torch.utils.tensorboard import SummaryWriter
 
-os.environ["CUDA_VISIBLE_DEVICES"] = cuda_id
-cuda = not no_cuda and torch.cuda.is_available()
+cuda = True
 # torch.manual_seed(seed)
 # if cuda:
 #     torch.cuda.manual_seed(seed)
@@ -104,23 +103,31 @@ def test(model, logger):
 
 
 if __name__ == '__main__':
+    # logger = SummaryWriter(log_dir=tensorboard_path+source_name+'To'+target_name)
+    # model = models.DSAN(num_classes=class_num)
+    # correct = 0
+    # # print(model)
+    # if cuda:
+    #     model.cuda()
+    # time_start = time.time()
+    # for epoch in range(1, epochs + 1):
+    #     train(epoch, model, logger)
+    #     t_correct = test(model, logger)
+    #     if t_correct > correct:
+    #         correct = t_correct
+    #         torch.save(model, 'model.pkl')
+    #     end_time = time.time()
+    #     print('source: {} to target: {} max correct: {} max accuracy{: .2f}%\n'.format(
+    #           source_name, target_name, correct, 100. * correct / len_target_dataset))
+    #     print('cost time:', end_time - time_start)
+    # # torch.save(model, 'model_last.pkl')
+    # logger.flush()
+    # logger.close()
+
+    '''for testing model'''
     logger = SummaryWriter(log_dir=tensorboard_path+source_name+'To'+target_name)
-    model = models.DSAN(num_classes=class_num)
-    correct = 0
-    # print(model)
-    if cuda:
-        model.cuda()
-    time_start = time.time()
-    for epoch in range(1, epochs + 1):
-        train(epoch, model, logger)
-        t_correct = test(model, logger)
-        if t_correct > correct:
-            correct = t_correct
-            torch.save(model, 'model.pkl')
-        end_time = time.time()
-        print('source: {} to target: {} max correct: {} max accuracy{: .2f}%\n'.format(
-              source_name, target_name, correct, 100. * correct / len_target_dataset))
-        print('cost time:', end_time - time_start)
-    # torch.save(model, 'model_last.pkl')
+    model_path = '/home/mori/Programming/DSAN/save_models/office31/d2w/RN50_acc9862.pkl'
+    model = torch.load(model_path).cuda()
+    correct = test(model, logger)
     logger.flush()
     logger.close()
